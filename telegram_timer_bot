@@ -6,9 +6,12 @@
 
 from ast import Break
 from time import sleep
+import time
 import requests
 
 import concurrent.futures
+
+import alarm_memory
 
 import secrets
 
@@ -66,6 +69,8 @@ if __name__ == "__main__":
     # create telegram bot object
     bot = TelegramBot()
 
+    memory = alarm_memory.AlarmMemory()
+
     executor = concurrent.futures.ThreadPoolExecutor(max_workers = 10)
 
     future_update = executor.submit(bot.get_next_update)
@@ -78,6 +83,18 @@ if __name__ == "__main__":
             sleep(1)
             print(". ", end = "")
 
+            # current time as epoch time
+            current_time = int(round(time.time()))
+            # load all the timers from memory
+            due_alarms = memory.due_alarms(current_time)
+            for timer in due_alarms:
+                # send a message to the user
+                for user_id in timer['user_ids']:
+                    bot.send_message(user_id, "Your alarm is due!")
+                # bot.send_message(timer['user_id'], "Your alarm is due")
+                # delete the timer from memory
+                memory.delete_alarm_by_time(current_time)
+               
             # if there is an update
             if future_update.done():
                 # get the update
@@ -87,10 +104,31 @@ if __name__ == "__main__":
                     # get the message
                     chat_id = update['message']['chat']['id']
                     first_name = update['message']['from']['first_name']
-                    username = update['message']['from']['username']
+                    try:
+                        username = update['message']['from']['username']
+                    except:
+                        username = first_name
                     text = update['message']['text']
                     if text == '/start':
-                        reply = 'Hello {}(@{})! I am an empty bot. I will do nothing'.format(first_name,username)
+                        reply = 'Hello {}(@{})! I am a timer bot. Ask me to /timer <seconds> to set a timer'.format(first_name,username)
+                    if text == '/help':
+                        reply = 'Ask me to /timer <seconds> to set a timer'
+                    # if text starts with /timer
+                    elif text.startswith('/timer'):
+                        # get the number of seconds
+                        seconds = text.split(' ')[1]
+                        # if the number is a number
+                        if seconds.isdigit():
+                            # calculate the end time and remember it
+                            # current time as epoch time
+                            current_time = int(round(time.time()))
+                            end_time = current_time + int(seconds)
+                            memory.add_alarm(chat_id, end_time)
+                            # calculate the full date time string for the end time
+                            end_time_string = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(end_time))
+                            reply = f'Timer set for {seconds} seconds from now at {end_time_string}'
+                        else:
+                            reply = 'Please enter a number of seconds'
                     else:
                         reply = 'I do not understand you.'
                     bot.send_message(chat_id, reply)
