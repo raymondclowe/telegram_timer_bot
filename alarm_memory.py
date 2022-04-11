@@ -1,5 +1,7 @@
 import json
-import time
+
+def keystoint(x):
+    return {int(k): v for k, v in x.items()}
 
 # define the memory class
 class AlarmMemory:
@@ -12,7 +14,7 @@ class AlarmMemory:
     def load_memory(self):
         try:
             with open(self.memory_filename, 'r') as f:
-                self.alarms = json.load(f)
+                self.alarms = json.load(f, object_hook=keystoint)
         except:
             pass
 
@@ -28,6 +30,7 @@ class AlarmMemory:
         else:
             # create a new alarm
             self.alarms[alarmtime] = {'user_ids' : [user_id]}
+        self.save_memory()
     
     def due_alarms(self, current_time):
     
@@ -46,6 +49,7 @@ class AlarmMemory:
             if alarmtime > current_time:
                 new_alarmtimes.append(self.alarms[alarmtime]    )
         self.alarms = new_alarmtimes
+        self.save_memory()
     
     def delete_alarm_by_user(self, user_id):
         # delete alarms for this user
@@ -54,3 +58,4 @@ class AlarmMemory:
                 self.alarms[alarmtime].remove(user_id)
                 if len(self.alarms[alarmtime]) == 0:
                     del self.alarms[alarmtime]
+        self.save_memory()

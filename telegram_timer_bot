@@ -7,6 +7,7 @@
 from ast import Break
 from time import sleep
 import time
+from turtle import write_docstringdict
 import requests
 
 import concurrent.futures
@@ -109,10 +110,50 @@ if __name__ == "__main__":
                     except:
                         username = first_name
                     text = update['message']['text']
+
+                    if text.lower().startswith("set") or text.lower().startswith("start"):
+                        # natural language process to get the duration from the text
+                        # parse the text, find the number
+                        # split the lower case text into words using spaces or dashes
+                        
+                        words = text.lower().replace("-"," ").split()
+
+                        # find how many words are numbers
+                        count_of_numbers = 0
+                        number_offset = 0
+                        for i in range (len(words)):
+                            word = words[i]
+                            # if the word is a valid number
+                            if word.isdigit():
+                                count_of_numbers += 1
+                                number_offset = i
+                        
+                        
+                        # if there is only one number, use it as the duration
+                        if count_of_numbers == 1:
+                            duration = int(words[number_offset])
+                        else:
+                            duration = 0
+                            text = '/help'
+
+                        possible_units = ['second', 'seconds', 'minute', 'minutes', 'hour', 'hours', 'day', 'days']
+                        unit_multipiers = [1,1,60,60,3600,3600,86400,86400]
+                        # find the unit
+
+                        # convert to seconds
+                        for i in range (len(words)):
+                            word = words[i]
+                            if word in possible_units:
+                                duration = duration * unit_multipiers[possible_units.index(word)] 
+                                break
+
+                        text = "/timer " + str(duration)
+                        
+                        
                     if text == '/start':
                         reply = 'Hello {}(@{})! I am a timer bot. Ask me to /timer <seconds> to set a timer'.format(first_name,username)
                     if text == '/help':
-                        reply = 'Ask me to /timer <seconds> to set a timer'
+                        reply = 'Ask me to /timer <seconds> to set a timer. I also understand things like "start a 5 minute timer" or "set a 5 hour timer" or "set a timer for 5 days for me"'
                     # if text starts with /timer
                     elif text.startswith('/timer'):
                         # get the number of seconds
@@ -139,7 +180,8 @@ if __name__ == "__main__":
         print("\nKeyboard break")        
         Break
 
-
+    # save memory
+    memory.save_memory()
     executor.shutdown(wait = False)
 
 print('done')
