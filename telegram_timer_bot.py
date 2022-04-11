@@ -82,7 +82,7 @@ if __name__ == "__main__":
         while True:
             # wait one second
             sleep(1)
-            print(". ", end = "")
+            print(". ", end = "", flush=True)
 
             # current time as epoch time
             current_time = int(round(time.time()))

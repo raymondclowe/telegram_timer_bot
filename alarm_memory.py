@@ -47,7 +47,7 @@ class AlarmMemory:
         new_alarmtimes = {}
         for alarmtime in self.alarms:
             if alarmtime > current_time:
-                new_alarmtimes.append(self.alarms[alarmtime]    )
+                new_alarmtimes[alarmtime] = self.alarms[alarmtime]
         self.alarms = new_alarmtimes
         self.save_memory()
     
