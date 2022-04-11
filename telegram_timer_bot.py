@@ -109,8 +109,10 @@ if __name__ == "__main__":
                         username = update['message']['from']['username']
                     except:
                         username = first_name
-                    text = update['message']['text']
-
+                    try:
+                        text = update['message']['text']
+                    except:
+                        text = ""
                     if text.lower().startswith("set") or text.lower().startswith("start"):
                         # natural language process to get the duration from the text
                         # parse the text, find the number
