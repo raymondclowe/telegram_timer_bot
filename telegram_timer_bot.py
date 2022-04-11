@@ -38,7 +38,10 @@ class TelegramBot:
                     f.write(str(self.offset))
         # timeout defaults to 30 and has max 50
         params = {'offset': self.offset + 1, 'limit': 1, 'timeout': 50}
-        response = self.session.get(self.api_url + 'getUpdates', params = params)
+        try:
+            response = self.session.get(self.api_url + 'getUpdates', params = params)
+        except:
+            return None
         if response.status_code != 200:
             return None
         try:
