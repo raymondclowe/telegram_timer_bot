@@ -4,10 +4,10 @@
 #
 # long polling with concurrent.futures so it isn't blocking
 
-from ast import Break
+
 from time import sleep
 import time
-from turtle import write_docstringdict
+
 import requests
 
 import concurrent.futures
@@ -178,7 +178,7 @@ if __name__ == "__main__":
     # keyboard break exception
     except KeyboardInterrupt:
         print("\nKeyboard break")        
-        Break
+
 
     # save memory
     memory.save_memory()
