@@ -116,6 +116,8 @@ if __name__ == "__main__":
                         text = update['message']['text']
                     except:
                         text = ""
+                    if text == "/set3minutetimer":
+                        text = "set 3 minute timer"
                     if text.lower().startswith("set") or text.lower().startswith("start"):
                         # natural language process to get the duration from the text
                         # parse the text, find the number
@@ -162,17 +164,22 @@ if __name__ == "__main__":
                     # if text starts with /timer
                     elif text.startswith('/timer'):
                         # get the number of seconds
-                        seconds = text.split(' ')[1]
-                        # if the number is a number
-                        if seconds.isdigit():
-                            # calculate the end time and remember it
-                            # current time as epoch time
-                            current_time = int(round(time.time()))
-                            end_time = current_time + int(seconds)
-                            memory.add_alarm(chat_id, end_time)
-                            # calculate the full date time string for the end time
-                            end_time_string = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(end_time))
-                            reply = f'Timer set for {seconds} seconds from now at {end_time_string}'
+                        words = text.split(' ')
+                        if len(words) > 1:
+                            seconds = words[1]
+                        
+                            # if the number is a number
+                            if seconds.isdigit():
+                                # calculate the end time and remember it
+                                # current time as epoch time
+                                current_time = int(round(time.time()))
+                                end_time = current_time + int(seconds)
+                                memory.add_alarm(chat_id, end_time)
+                                # calculate the full date time string for the end time
+                                end_time_string = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(end_time))
+                                reply = f'Timer set for {seconds} seconds from now at {end_time_string}'
+                            else:
+                                reply = 'Please enter a number of seconds'
                         else:
                             reply = 'Please enter a number of seconds'
                     else:
