@@ -5,6 +5,7 @@
 # long polling with concurrent.futures so it isn't blocking
 
 
+from json import JSONDecodeError
 from time import sleep
 import time
 
@@ -33,7 +34,7 @@ class TelegramBot:
             try:
                 with open(self.offset_filename, 'r') as f:
                     self.offset = int(f.read()) - 1
-            except:
+            except FileNotFoundError:
                 with open(self.offset_filename, 'w') as f:
                     f.write(str(self.offset))
         # timeout defaults to 30 and has max 50
@@ -46,7 +47,7 @@ class TelegramBot:
             return None
         try:
             response_json = response.json()
-        except:
+        except JSONDecodeError:
             return None
         if 'result' not in response_json:
             return None
@@ -110,11 +111,11 @@ if __name__ == "__main__":
                     first_name = update['message']['from']['first_name']
                     try:
                         username = update['message']['from']['username']
-                    except:
+                    except KeyError:
                         username = first_name
                     try:
                         text = update['message']['text']
-                    except:
+                    except KeyError:
                         text = ""
                     if text == "/set3minutetimer":
                         text = "set 3 minute timer"
