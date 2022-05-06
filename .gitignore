@@ -132,3 +132,7 @@ telegram_update_offset.txt
 telegram_timer_bot
 Untitled-1.ipynb
 alarm-memory.json
+
+# history folder
+.history
+settings.json
