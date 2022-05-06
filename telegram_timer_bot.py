@@ -39,7 +39,7 @@ class TelegramBot:
         # timeout defaults to 30 and has max 50
         params = {'offset': self.offset + 1, 'limit': 1, 'timeout': 50}
         try:
-            response = self.session.get(self.api_url + 'getUpdates', params = params)
+            response = self.session.get(self.api_url + 'getUpdates', params = params, timeout=50)
         except:
             return None
         if response.status_code != 200:
